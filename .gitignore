@@ -1,0 +1,31 @@
+# Environment files
+.env
+.env.local
+.env.prod
+.env.staging
+
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation files (exclude all .md except API_GUIDE.md)
+*.md
+!API_GUIDE.md
