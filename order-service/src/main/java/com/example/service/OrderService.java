@@ -65,6 +65,8 @@ public class OrderService {
         order.setStatus(Order.OrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
+        // Set expiration time to 10 minutes from now
+        order.setExpiresAt(LocalDateTime.now().plusMinutes(10));
         return orderRepository.save(order);
     }
 
@@ -199,9 +201,15 @@ public class OrderService {
             
             // Call payment service
             restTemplate.postForObject(PAYMENT_SERVICE_URL + "/api/payments/create-for-order", entity, Object.class);
+            logger.info("Payment creation initiated for order: {}", savedOrder.getId());
             
         } catch (Exception e) {
             logger.error("Failed to create payment for order: {}", savedOrder.getId(), e);
+            // Cancel the order since payment creation failed
+            savedOrder.setStatus(Order.OrderStatus.CANCELLED);
+            savedOrder.setUpdatedAt(LocalDateTime.now());
+            orderRepository.save(savedOrder);
+            logger.info("Order {} cancelled due to payment creation failure", savedOrder.getId());
         }
         
         // Get customer info and return response

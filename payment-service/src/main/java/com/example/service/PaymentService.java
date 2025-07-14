@@ -20,6 +20,9 @@ public class PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private WebhookService webhookService;
 
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
@@ -69,7 +72,12 @@ public class PaymentService {
             logger.warn("Payment failed: {}", payment.getPaymentReference());
         }
         
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+        
+        // Send webhook to order service
+        webhookService.notifyOrderStatusChange(payment.getOrderId(), payment.getStatus().toString());
+        
+        return savedPayment;
     }
 
     public Payment updatePaymentStatus(Long id, Payment.PaymentStatus status) {

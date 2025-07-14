@@ -24,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     @Query("SELECT COUNT(o) FROM Order o WHERE o.userId = :userId")
     Long countByUserId(@Param("userId") Long userId);
+    
+    List<Order> findByStatusAndExpiresAtBefore(Order.OrderStatus status, LocalDateTime expiresAt);
 }

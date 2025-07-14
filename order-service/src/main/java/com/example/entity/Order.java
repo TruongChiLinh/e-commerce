@@ -38,6 +38,9 @@ public class Order {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+    
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
     // Constructors
     public Order() {}
@@ -78,6 +81,9 @@ public class Order {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    
+    public LocalDateTime getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
 
     public enum OrderStatus {
         PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
