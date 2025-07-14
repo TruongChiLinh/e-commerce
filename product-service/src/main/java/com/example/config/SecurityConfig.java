@@ -35,6 +35,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/products").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/products/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").authenticated()
