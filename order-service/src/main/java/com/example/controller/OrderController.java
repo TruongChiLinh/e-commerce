@@ -45,8 +45,12 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<ApiResponse<OrderResponse>> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
-        OrderResponse orderResponse = orderService.placeOrder(request);
+    public ResponseEntity<ApiResponse<OrderResponse>> placeOrder(
+            @Valid @RequestBody PlaceOrderRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        String token = authHeader.replace("Bearer ", "");
+        OrderResponse orderResponse = orderService.placeOrderWithAuth(request, token);
         return ResponseEntity.ok(ApiResponse.success("Order placed successfully", orderResponse));
     }
 
