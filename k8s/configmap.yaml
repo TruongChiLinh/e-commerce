@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+  namespace: microservices
+data:
+  init-db.sql: |
+    CREATE DATABASE IF NOT EXISTS auth_db;
+    CREATE DATABASE IF NOT EXISTS user_db;
+    CREATE DATABASE IF NOT EXISTS product_db;
+    CREATE DATABASE IF NOT EXISTS order_db;
+    CREATE DATABASE IF NOT EXISTS payment_db;
+
+    -- Grant permissions
+    GRANT ALL PRIVILEGES ON auth_db.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON user_db.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON product_db.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON order_db.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON payment_db.* TO 'root'@'%';
+    FLUSH PRIVILEGES;

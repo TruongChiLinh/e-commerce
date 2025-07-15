@@ -1,5 +1,8 @@
 FROM maven:3.8.4-openjdk-17 AS builder
 
+# Fix DNS issue
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 WORKDIR /app
 
 # Copy common-lib
@@ -18,6 +21,9 @@ RUN mvn clean package -DskipTests
 
 # Runtime stage
 FROM openjdk:17-jdk-slim
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
