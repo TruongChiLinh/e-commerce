@@ -33,7 +33,7 @@ jobs:
           mvn clean package -DskipTests
 
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: auth-service-jar
           path: auth-service/target/*.jar
