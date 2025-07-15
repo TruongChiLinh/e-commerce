@@ -1,0 +1,45 @@
+name: Auth Service Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'auth-service/**'
+      - 'common-lib/**'
+      - '.github/workflows/auth-service.yml'
+
+
+jobs:
+  build-auth-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 with Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build common-lib
+        run: |
+          cd common-lib
+          mvn clean install -DskipTests
+
+      - name: Build auth-service
+        run: |
+          cd auth-service
+          mvn clean package -DskipTests
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: auth-service-jar
+          path: auth-service/target/*.jar
+
+      - name: Verify build
+        run: |
+          echo "Auth service build completed successfully"
+          ls -la auth-service/target/*.jar
