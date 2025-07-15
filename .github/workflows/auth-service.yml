@@ -2,12 +2,11 @@ name: Auth Service Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'auth-service/**'
-      - 'common-lib/**'
-      - '.github/workflows/auth-service.yml'
-
+      - "auth-service/**"
+      - "common-lib/**"
+      - ".github/workflows/auth-service.yml"
 
 jobs:
   build-auth-service:
@@ -19,8 +18,8 @@ jobs:
       - name: Set up JDK 11 with Maven
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'temurin'
+          java-version: "11"
+          distribution: "temurin"
           cache: maven
 
       - name: Build common-lib
