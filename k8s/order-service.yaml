@@ -12,11 +12,15 @@ spec:
     metadata:
       labels:
         app: order-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
         - name: order-service
           image: jaytruong/order-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
           env:
@@ -26,6 +30,17 @@ spec:
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "password"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: jwt-secret
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "health,info,prometheus,metrics"
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+              value: "true"
           livenessProbe:
             httpGet:
               path: /actuator/health

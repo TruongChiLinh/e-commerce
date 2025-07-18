@@ -73,4 +73,15 @@ public class AuthController {
         boolean isValid = authService.validateToken(token);
         return ResponseEntity.ok(ApiResponse.success(isValid));
     }
+
+    @GetMapping("/user/{username}")
+    @Operation(summary = "Get user by username", description = "Retrieve user information by username")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User found"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<ApiResponse<Object>> getUserByUsername(@Parameter(description = "Username") @PathVariable String username) {
+        Object userInfo = authService.getUserInfoByUsername(username);
+        return ResponseEntity.ok(ApiResponse.success(userInfo));
+    }
 }

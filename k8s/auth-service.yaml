@@ -12,11 +12,15 @@ spec:
     metadata:
       labels:
         app: auth-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8084"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
       - name: auth-service
         image: jaytruong/auth-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8084
         env:
@@ -40,6 +44,12 @@ spec:
             secretKeyRef:
               name: app-secret
               key: jwt-secret
+        - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+          value: "health,info,prometheus,metrics"
+        - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+          value: "true"
+        - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+          value: "true"
         livenessProbe:
           httpGet:
             path: /actuator/health

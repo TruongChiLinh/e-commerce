@@ -59,21 +59,32 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         logger.info("Login attempt for user: {}", request.getUsername());
         
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BusinessException("Invalid credentials"));
+        try {
+            User user = userRepository.findByUsername(request.getUsername())
+                    .orElseThrow(() -> new BusinessException("Invalid credentials"));
+            logger.info("User found: {}", user.getUsername());
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException("Invalid credentials");
-        }   
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                logger.error("Password mismatch for user: {}", request.getUsername());
+                throw new BusinessException("Invalid credentials");
+            }   
+            logger.info("Password matches for user: {}", request.getUsername());
 
-        if (user.getStatus() != User.UserStatus.ACTIVE) {
-            throw new BusinessException("Account is not active");
+            if (user.getStatus() != User.UserStatus.ACTIVE) {
+                logger.error("User status not active: {} - {}", request.getUsername(), user.getStatus());
+                throw new BusinessException("Account is not active");
+            }
+            logger.info("User status is active: {}", request.getUsername());
+
+            logger.info("Generating JWT token for user: {} with roles: {}", user.getUsername(), user.getRoles());
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRoles());
+            logger.info("JWT token generated successfully for user: {}", request.getUsername());
+            
+            return new LoginResponse(token, user.getUsername(), user.getFullName(), user.getRoles());
+        } catch (Exception e) {
+            logger.error("Unexpected error during login for user: {}", request.getUsername(), e);
+            throw e;
         }
-
-        String token = jwtUtil.generateToken(user.getUsername(), user.getRoles());
-        logger.info("User logged in successfully: {}", request.getUsername());
-        
-        return new LoginResponse(token, user.getUsername(), user.getFullName(), user.getRoles());
     }
 
     public void logout(String token) {
@@ -91,5 +102,20 @@ public class AuthService {
             token = token.substring(7);
         }
         return jwtUtil.validateToken(token);
+    }
+
+    public Object getUserInfoByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        
+        // Return basic user info (don't include password)
+        return new java.util.HashMap<String, Object>() {{
+            put("id", user.getId());
+            put("username", user.getUsername());
+            put("fullName", user.getFullName());
+            put("email", user.getEmail());
+            put("roles", user.getRoles());
+            put("status", user.getStatus());
+        }};
     }
 }

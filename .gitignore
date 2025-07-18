@@ -29,4 +29,8 @@ Thumbs.db
 # Documentation files (exclude all .md except API_GUIDE.md)
 *.md
 !API_GUIDE.md
-!API_MANAGEMENT_DOCUMENTATION.mdk8s/secrets.yaml
+!API_MANAGEMENT_DOCUMENTATION.md
+
+# Kubernetes and shell scripts
+k8s/
+*.sh

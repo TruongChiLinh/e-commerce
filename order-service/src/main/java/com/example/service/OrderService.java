@@ -31,6 +31,7 @@ public class OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private static final String USER_SERVICE_URL = "http://localhost:8081";
+    private static final String AUTH_SERVICE_URL = "http://localhost:8084";
     private static final String PAYMENT_SERVICE_URL = "http://localhost:8085";
 
     @Autowired
@@ -222,8 +223,13 @@ public class OrderService {
     private Long getUserIdByUsername(String username) {
         try {
             Map<String, Object> userInfo = restTemplate.getForObject(
-                USER_SERVICE_URL + "/api/users/username/" + username, Map.class);
-            return userInfo != null ? ((Number) userInfo.get("id")).longValue() : null;
+                AUTH_SERVICE_URL + "/api/auth/user/" + username, Map.class);
+            
+            if (userInfo != null && userInfo.get("data") != null) {
+                Map<String, Object> userData = (Map<String, Object>) userInfo.get("data");
+                return userData != null ? ((Number) userData.get("id")).longValue() : null;
+            }
+            return null;
         } catch (Exception e) {
             logger.error("Failed to get user ID for username: {}", username, e);
             throw new BusinessException("Unable to retrieve user information");

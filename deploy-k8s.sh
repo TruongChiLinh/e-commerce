@@ -33,6 +33,19 @@ kubectl apply -f k8s/product-service.yaml
 kubectl apply -f k8s/order-service.yaml
 kubectl apply -f k8s/payment-service.yaml
 
+# Apply APISIX Gateway
+echo "🌐 Deploying APISIX Gateway with Service Discovery..."
+kubectl apply -f k8s/apisix-config.yaml
+kubectl apply -f k8s/apisix.yaml
+
+# Wait for APISIX to be ready
+echo "⏳ Waiting for APISIX to be ready..."
+kubectl wait --for=condition=ready pod -l app=apisix -n microservices --timeout=300s
+
+# Setup APISIX routes with Service Discovery
+echo "🔗 Setting up APISIX routes with Kubernetes Service Discovery..."
+kubectl apply -f k8s/apisix-routes.yaml
+
 # Apply Ingress
 kubectl apply -f k8s/ingress.yaml
 
@@ -42,6 +55,16 @@ echo "📋 Check status with:"
 echo "  kubectl get pods -n microservices"
 echo "  kubectl get services -n microservices"
 echo "  kubectl get ingress -n microservices"
+echo ""
+echo "🌐 APISIX Gateway endpoints:"
+echo "  Gateway: http://localhost:9080"
+echo "  Admin API: http://localhost:9091"
+echo "  Admin Key: edd1c9f034335f136f87ad84b625c8f1"
+echo ""
+echo "🔗 Test Service Discovery:"
+echo "  curl http://localhost:9080/api/auth/health"
+echo "  curl http://localhost:9080/api/users/health" 
+echo "  curl http://localhost:9080/api/products/health"
 echo ""
 echo "🌐 Add to /etc/hosts:"
 echo "  127.0.0.1 microservices.local"

@@ -22,15 +22,25 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operations-sorter: method
+    try-it-out-enabled: true
+    config-url: /api-docs/swagger-config
+    url: /api-docs
+  use-fqn: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus,metrics
   endpoint:
     health:
       show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 services:
   user-service-url: http://localhost:8081

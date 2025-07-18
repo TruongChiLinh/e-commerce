@@ -12,11 +12,15 @@ spec:
     metadata:
       labels:
         app: product-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
         - name: product-service
           image: jaytruong/product-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
           env:
@@ -26,6 +30,12 @@ spec:
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "password"
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "health,info,prometheus,metrics"
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+              value: "true"
           livenessProbe:
             httpGet:
               path: /actuator/health
